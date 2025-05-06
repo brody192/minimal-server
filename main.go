@@ -11,11 +11,17 @@ import (
 	"time"
 )
 
+var HTTP_RESP_ID = cmp.Or(os.Getenv("SOURCE_ID"), os.Getenv("RAILWAY_REPLICA_ID"), "unknown")
+
 func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/status-code/200", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, http.StatusText(http.StatusOK))
+	})
+
+	mux.HandleFunc("/id", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, HTTP_RESP_ID)
 	})
 
 	port := cmp.Or(os.Getenv("PORT"), "8080")

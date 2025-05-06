@@ -7,6 +7,7 @@ COPY . ./
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o main .
 
 FROM gcr.io/distroless/static-debian12
+# FROM ubuntu:latest
 
 WORKDIR /app
 
