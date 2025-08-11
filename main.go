@@ -3,6 +3,7 @@ package main
 import (
 	"cmp"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 )
 
 var HTTP_RESP_ID = cmp.Or(os.Getenv("SOURCE_ID"), os.Getenv("RAILWAY_REPLICA_ID"), "unknown")
+var HTTP_RESP_IP = "unknown"
 
 func main() {
 	mux := http.NewServeMux()
@@ -22,6 +24,15 @@ func main() {
 
 	mux.HandleFunc("/id", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, HTTP_RESP_ID)
+	})
+
+	mux.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		json.NewEncoder(w).Encode(map[string]string{
+			"id": HTTP_RESP_ID,
+			"ip": HTTP_RESP_IP,
+		})
 	})
 
 	port := cmp.Or(os.Getenv("PORT"), "8080")
