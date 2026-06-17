@@ -19,11 +19,11 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/status-code/200", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, http.StatusText(http.StatusOK))
+		fmt.Fprint(w, http.StatusText(http.StatusOK))
 	})
 
 	mux.HandleFunc("/id", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, HTTP_RESP_ID)
+		fmt.Fprint(w, HTTP_RESP_ID)
 	})
 
 	mux.HandleFunc("/data", func(w http.ResponseWriter, r *http.Request) {
@@ -38,8 +38,12 @@ func main() {
 	port := cmp.Or(os.Getenv("PORT"), "8080")
 
 	server := &http.Server{
-		Addr:    ":" + port,
-		Handler: mux,
+		Addr:              ":" + port,
+		Handler:           mux,
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       60 * time.Second,
+		WriteTimeout:      60 * time.Second,
+		IdleTimeout:       60 * time.Second, // reaps idle keep-alives so FDs/goroutines don't accumulate
 	}
 
 	shutdown := make(chan os.Signal, 1)
